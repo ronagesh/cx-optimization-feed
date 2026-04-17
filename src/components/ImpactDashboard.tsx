@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts';
-import { TrendingUp, CheckCircle2, Clock } from 'lucide-react';
+import { TrendingUp, Clock } from 'lucide-react';
 import type { Issue } from '../types';
 
 interface ImpactDashboardProps {
@@ -66,6 +66,15 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
 
   const fixWeekLabel = data[fixIdx]?.week;
 
+  const timeToFix = (() => {
+    if (!issue.detectedDate || !issue.fixAppliedDate) return null;
+    const msPerDay = 1000 * 60 * 60 * 24;
+    const days = Math.round(
+      (new Date(issue.fixAppliedDate).getTime() - new Date(issue.detectedDate).getTime()) / msPerDay
+    );
+    return days === 1 ? '1 day' : `${days} days`;
+  })();
+
   return (
     <div className="bg-white border border-gray-100 rounded-xl overflow-hidden">
       <div className="px-5 pt-5 pb-3">
@@ -78,12 +87,23 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
             </div>
             <h3 className="font-semibold text-gray-900">{issue.title}</h3>
           </div>
-          <button
-            onClick={onSelect}
-            className="text-xs text-brand-purple font-medium hover:underline shrink-0"
-          >
-            View issue
-          </button>
+          <div className="flex items-center gap-4 shrink-0">
+            {issue.fixAppliedDate && (
+              <div className="text-right">
+                <p className="text-xs text-gray-400">Fix applied</p>
+                <p className="text-xs font-medium text-gray-700">
+                  {new Date(issue.fixAppliedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  {timeToFix && <span className="text-gray-400 font-normal"> · {timeToFix} to fix</span>}
+                </p>
+              </div>
+            )}
+            <button
+              onClick={onSelect}
+              className="text-xs text-brand-purple font-medium hover:underline"
+            >
+              View issue
+            </button>
+          </div>
         </div>
 
         {/* Stat pills */}
@@ -106,12 +126,6 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
               </span>
             </div>
           ) : null}
-          {fixWeekLabel && (
-            <div className="flex items-center gap-1.5 text-gray-400 text-xs px-2 py-1.5">
-              <CheckCircle2 size={12} />
-              Fix applied {fixWeekLabel}
-            </div>
-          )}
         </div>
 
         {/* Chart */}

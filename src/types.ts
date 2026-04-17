@@ -50,4 +50,6 @@ export interface Issue {
   impactData: ImpactDataPoint[];
   fixAppliedWeek?: number; // index into impactData where fix was applied
   detectedAt: string;
+  detectedDate?: string;   // ISO date string, e.g. "2026-03-03"
+  fixAppliedDate?: string; // ISO date string, e.g. "2026-03-31"
 }

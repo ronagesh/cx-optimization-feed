@@ -18,6 +18,8 @@ export const ISSUES: Issue[] = [
       modelConfidence: 97,
     },
     detectedAt: 'Detected across last 7 days',
+    detectedDate: '2026-03-03',
+    fixAppliedDate: '2026-03-31',
     conversationSamples: [
       {
         id: 'c1',
@@ -104,6 +106,8 @@ Prefer an exchange? Select "Exchange" in the Returns Portal and we'll ship your 
       modelConfidence: 92,
     },
     detectedAt: 'Detected across last 7 days',
+    detectedDate: '2026-03-03',
+    fixAppliedDate: '2026-03-31',
     conversationSamples: [
       {
         id: 'c4',
