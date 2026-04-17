@@ -113,7 +113,7 @@ export function IssueFeed({ issues, onSelectIssue }: IssueFeedProps) {
     <div className="max-w-5xl mx-auto px-6 py-8">
       {/* Page header */}
       <div className="mb-6">
-        <h1 className="font-heading font-bold text-2xl text-gray-900">Issue Tracker</h1>
+        <h1 className="font-heading font-bold text-2xl text-gray-900">Decagon Hillclimbing Agent</h1>
         <p className="mt-1 text-sm text-gray-500">
           Issues are ranked by their expected impact on customer satisfaction and resolution rate.
           Apply suggested fixes to start improving your metrics.

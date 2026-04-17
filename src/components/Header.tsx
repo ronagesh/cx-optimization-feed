@@ -24,7 +24,7 @@ export function Header({ onNavigate, activeView }: HeaderProps) {
                   : 'text-gray-500 hover:text-gray-900'
               }`}
             >
-              Issue Tracker
+              Hillclimbing Agent
             </button>
             <button
               onClick={() => onNavigate('impact')}
