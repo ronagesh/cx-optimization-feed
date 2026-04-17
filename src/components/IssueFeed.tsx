@@ -71,7 +71,7 @@ function ScoreLabel({ value }: { value: number }) {
 
 function computeR7Lift(issue: Issue, key: 'csat' | 'deflection'): number | null {
   const data = issue.impactData;
-  const fixIdx = issue.fixAppliedWeek ?? data.length;
+  const fixIdx = issue.fixAppliedIndex ?? data.length;
   const before = data.slice(0, fixIdx);
   const after = data.slice(fixIdx);
   if (!before.length || !after.length) return null;

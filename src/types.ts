@@ -31,7 +31,7 @@ export interface SuggestedFix {
 }
 
 export interface ImpactDataPoint {
-  week: string;
+  date: string; // formatted "Mar 1"
   csat: number;
   deflection: number;
 }
@@ -48,7 +48,7 @@ export interface Issue {
   conversationSamples: ConversationSample[];
   suggestedFix: SuggestedFix;
   impactData: ImpactDataPoint[];
-  fixAppliedWeek?: number; // index into impactData where fix was applied
+  fixAppliedIndex?: number; // index into impactData where fix was applied
   detectedAt: string;
   detectedDate?: string;   // ISO date string, e.g. "2026-03-03"
   fixAppliedDate?: string; // ISO date string, e.g. "2026-03-31"

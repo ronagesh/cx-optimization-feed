@@ -40,16 +40,15 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
 
 function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void }) {
   const data = issue.impactData;
-  const fixIdx = issue.fixAppliedWeek ?? data.length;
+  const fixIdx = issue.fixAppliedIndex ?? data.length;
   const before = data.slice(0, fixIdx);
   const after = data.slice(fixIdx);
 
-  const WINDOW = 1; // weeks (R7)
+  const WINDOW = 7; // days (true R7)
   const avg = (arr: typeof data, key: 'csat' | 'deflection') =>
     arr.length ? Math.round(arr.reduce((s, d) => s + d[key], 0) / arr.length) : null;
 
-  // Before: last WINDOW weeks before fix (fixed baseline)
-  // After: last WINDOW weeks of post-fix data (rolling)
+  // Before: last 7 days before fix; After: last 7 days of post-fix data
   const beforeWindow = before.slice(-WINDOW);
   const afterWindow = after.slice(-WINDOW);
 
@@ -64,7 +63,7 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
       ? afterDeflection - beforeDeflection
       : null;
 
-  const fixWeekLabel = data[fixIdx]?.week;
+  const fixDateLabel = data[fixIdx]?.date;
 
   const timeToFix = (() => {
     if (!issue.detectedDate || !issue.fixAppliedDate) return null;
@@ -129,22 +128,27 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
         </div>
 
         {/* Chart */}
-        <ResponsiveContainer width="100%" height={180}>
+        <ResponsiveContainer width="100%" height={200}>
           <LineChart data={data} margin={{ top: 4, right: 8, bottom: 0, left: -10 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" />
-            <XAxis dataKey="week" tick={{ fontSize: 11, fill: '#9CA3AF' }} tickLine={false} axisLine={false} />
-            <YAxis
-              yAxisId="csat"
-              domain={[40, 100]}
+            <XAxis
+              dataKey="date"
               tick={{ fontSize: 11, fill: '#9CA3AF' }}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(v) => `${v}`}
+              interval={6}
+            />
+            <YAxis
+              yAxisId="csat"
+              domain={[30, 100]}
+              tick={{ fontSize: 11, fill: '#9CA3AF' }}
+              tickLine={false}
+              axisLine={false}
             />
             <YAxis
               yAxisId="deflection"
               orientation="right"
-              domain={[40, 90]}
+              domain={[30, 90]}
               tick={{ fontSize: 11, fill: '#9CA3AF' }}
               tickLine={false}
               axisLine={false}
@@ -156,9 +160,9 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
               iconType="circle"
               iconSize={8}
             />
-            {fixWeekLabel && (
+            {fixDateLabel && (
               <ReferenceLine
-                x={fixWeekLabel}
+                x={fixDateLabel}
                 yAxisId="csat"
                 stroke="#5754FF"
                 strokeDasharray="4 3"
@@ -172,8 +176,8 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
               name="CSAT"
               stroke="#5754FF"
               strokeWidth={2}
-              dot={{ r: 3, fill: '#5754FF' }}
-              activeDot={{ r: 4 }}
+              dot={false}
+              activeDot={{ r: 3 }}
             />
             <Line
               yAxisId="deflection"
@@ -182,16 +186,16 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
               name="Deflection"
               stroke="#00AEC2"
               strokeWidth={2}
-              dot={{ r: 3, fill: '#00AEC2' }}
-              activeDot={{ r: 4 }}
+              dot={false}
+              activeDot={{ r: 3 }}
             />
           </LineChart>
         </ResponsiveContainer>
 
         <p className="text-xs text-gray-400 mt-2">
           Metrics measured on conversations in the <strong>{issue.category}</strong> category. CSAT shown out of 100.
-          {fixWeekLabel
-            ? ` Lift = R7 after fix vs. R7 baseline before fix. Dashed line = deployment (${fixWeekLabel}).`
+          {fixDateLabel
+            ? ` Lift = 7-day rolling avg after fix vs. 7-day baseline before fix. Dashed line = deployment (${fixDateLabel}).`
             : ''}
         </p>
       </div>

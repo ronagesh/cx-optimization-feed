@@ -1,4 +1,54 @@
-import type { Issue } from '../types';
+import type { Issue, ImpactDataPoint } from '../types';
+
+// Deterministic noise: layered sin waves so data looks natural but is reproducible
+function noise(seed: number, amp: number): number {
+  return Math.round(
+    (Math.sin(seed * 1.7 + 0.3) * 0.5 +
+      Math.sin(seed * 3.3 + 1.1) * 0.3 +
+      Math.sin(seed * 0.6 + 2.5) * 0.2) *
+      amp
+  );
+}
+
+function makeDailyData(
+  startDateStr: string,
+  totalDays: number,
+  fixDay: number | null,
+  baseCsat: number,
+  baseDeflection: number,
+  csatLift: number,
+  deflectionLift: number
+): ImpactDataPoint[] {
+  const start = new Date(startDateStr);
+  return Array.from({ length: totalDays }, (_, i) => {
+    const d = new Date(start);
+    d.setDate(d.getDate() + i);
+    const date = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+    let csat: number;
+    let deflection: number;
+
+    if (fixDay === null || i < fixDay) {
+      csat = Math.min(100, Math.max(0, baseCsat + noise(i, 3)));
+      deflection = Math.min(100, Math.max(0, baseDeflection + noise(i + 17, 3)));
+    } else {
+      const t = i - fixDay;
+      const progress = 1 - Math.exp(-t / 12);
+      csat = Math.min(100, Math.max(0, baseCsat + Math.round(csatLift * progress) + noise(i, 2)));
+      deflection = Math.min(100, Math.max(0, baseDeflection + Math.round(deflectionLift * progress) + noise(i + 17, 2)));
+    }
+
+    return { date, csat, deflection };
+  });
+}
+
+// Issue 1 & 2: Mar 1 → Apr 21 (52 days), fix applied Mar 31 (index 30)
+// Issue 3-5: Mar 1 → Mar 28 (28 days), no fix
+const ISSUE1_DATA = makeDailyData('2026-03-01', 52, 30, 65, 55, 14, 13);
+const ISSUE2_DATA = makeDailyData('2026-03-01', 52, 30, 68, 58, 13, 15);
+const ISSUE3_DATA = makeDailyData('2026-03-01', 28, null, 62, 52, 0, 0);
+const ISSUE4_DATA = makeDailyData('2026-03-01', 28, null, 66, 56, 0, 0);
+const ISSUE5_DATA = makeDailyData('2026-03-01', 28, null, 70, 60, 0, 0);
 
 export const ISSUES: Issue[] = [
   {
@@ -77,17 +127,8 @@ Customers may return most items within **{{returnWindow}}** of the delivery date
 ## Exchanges
 Prefer an exchange? Select "Exchange" in the Returns Portal and we'll ship your new item as soon as we receive the return.`,
     },
-    impactData: [
-      { week: 'Mar 3', csat: 68, deflection: 62 },
-      { week: 'Mar 10', csat: 66, deflection: 61 },
-      { week: 'Mar 17', csat: 64, deflection: 60 },
-      { week: 'Mar 24', csat: 66, deflection: 61 },
-      { week: 'Mar 31', csat: 64, deflection: 59 },
-      { week: 'Apr 7', csat: 70, deflection: 65 },
-      { week: 'Apr 14', csat: 74, deflection: 69 },
-      { week: 'Apr 21', csat: 78, deflection: 72 },
-    ],
-    fixAppliedWeek: 4,
+    impactData: ISSUE1_DATA,
+    fixAppliedIndex: 30,
   },
   {
     id: 'issue-2',
@@ -157,17 +198,8 @@ Once your order ships, we send a confirmation email with a direct carrier tracki
 ## My order says "Delivered" but I haven't received it
 Please wait 24 hours — packages are sometimes marked delivered early. If it still hasn't arrived, [contact us](https://example.com/contact) and we'll file a carrier claim on your behalf.`,
     },
-    impactData: [
-      { week: 'Mar 3', csat: 72, deflection: 65 },
-      { week: 'Mar 10', csat: 70, deflection: 64 },
-      { week: 'Mar 17', csat: 72, deflection: 65 },
-      { week: 'Mar 24', csat: 70, deflection: 63 },
-      { week: 'Mar 31', csat: 68, deflection: 64 },
-      { week: 'Apr 7', csat: 74, deflection: 70 },
-      { week: 'Apr 14', csat: 78, deflection: 74 },
-      { week: 'Apr 21', csat: 82, deflection: 78 },
-    ],
-    fixAppliedWeek: 4,
+    impactData: ISSUE2_DATA,
+    fixAppliedIndex: 30,
   },
   {
     id: 'issue-3',
@@ -236,12 +268,7 @@ We currently do not ship to Russia, Belarus, Iran, North Korea, Cuba, or Syria d
 ## Questions?
 For specific rate quotes or shipping to a country not listed above, please [contact us](https://example.com/contact).`,
     },
-    impactData: [
-      { week: 'Mar 3', csat: 70, deflection: 58 },
-      { week: 'Mar 10', csat: 68, deflection: 57 },
-      { week: 'Mar 17', csat: 70, deflection: 57 },
-      { week: 'Mar 24', csat: 66, deflection: 56 },
-    ],
+    impactData: ISSUE3_DATA,
   },
   {
     id: 'issue-4',
@@ -308,12 +335,7 @@ Common reasons a code might not apply:
 
 If your code should work but isn't, [contact us](https://example.com/contact) and we'll apply it manually.`,
     },
-    impactData: [
-      { week: 'Mar 10', csat: 72, deflection: 61 },
-      { week: 'Mar 17', csat: 70, deflection: 60 },
-      { week: 'Mar 24', csat: 72, deflection: 60 },
-      { week: 'Mar 31', csat: 68, deflection: 59 },
-    ],
+    impactData: ISSUE4_DATA,
   },
   {
     id: 'issue-5',
@@ -374,10 +396,6 @@ We also offer digital gift cards in amounts from $25 to $500. [Purchase a gift c
 ## Questions?
 If you've already placed an order and want to add a gift note or gift receipt, [contact us](https://example.com/contact) within 1 hour of placing your order and we'll do our best to accommodate.`,
     },
-    impactData: [
-      { week: 'Mar 17', csat: 74, deflection: 64 },
-      { week: 'Mar 24', csat: 72, deflection: 63 },
-      { week: 'Mar 31', csat: 74, deflection: 63 },
-    ],
+    impactData: ISSUE5_DATA,
   },
 ];
