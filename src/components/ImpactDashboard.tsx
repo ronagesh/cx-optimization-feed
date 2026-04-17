@@ -33,7 +33,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
       {visible.map((p) => (
         <p key={p.name} style={{ color: p.color }} className="tabular-nums">
           {p.name}: <span className="font-semibold">{p.value}</span>
-          {p.name === 'CSAT' || p.name === 'CSAT (projected)' ? ' / 100' : '%'}
+          {p.name === 'CSAT' || p.name === 'CSAT (without fix)' ? ' / 100' : '%'}
         </p>
       ))}
     </div>
@@ -264,7 +264,7 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
                   yAxisId="csat"
                   type="monotone"
                   dataKey="csatCounterfactual"
-                  name="CSAT (projected)"
+                  name="CSAT (without fix)"
                   stroke="#5754FF"
                   strokeWidth={1.5}
                   strokeDasharray="5 4"
@@ -277,7 +277,7 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
                   yAxisId="deflection"
                   type="monotone"
                   dataKey="deflectionCounterfactual"
-                  name="Deflection (projected)"
+                  name="Deflection (without fix)"
                   stroke="#00AEC2"
                   strokeWidth={1.5}
                   strokeDasharray="5 4"
@@ -293,7 +293,7 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
 
         <p className="text-xs text-gray-400 mt-2">
           CSAT out of 100. Lift = R7 avg after fix vs. R7 baseline before.
-          {fixDateLabel ? ` Dashed lines show projected trend without the fix (counterfactual).` : ''}
+          {fixDateLabel ? ` Dashed lines show where metrics would have trended had the fix not gone live.` : ''}
           {(csatCI || deflCI) ? ' ±CI = 95% confidence interval.' : ''}
         </p>
       </div>
