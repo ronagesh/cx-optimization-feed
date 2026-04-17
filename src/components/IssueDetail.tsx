@@ -212,12 +212,12 @@ export function IssueDetail({ issue, onBack, onApplyFix }: IssueDetailProps) {
 
             <div className="space-y-4">
               <MetricExplainer
-                label="How common is this?"
+                label="Frequency"
                 value={issue.scoreBreakdown.frequency}
                 description={`Affects roughly ${issue.scoreBreakdown.frequency}% of recent conversations`}
               />
               <MetricExplainer
-                label="CSAT Impact"
+                label="CSAT Risk"
                 value={issue.scoreBreakdown.csatImpact}
                 description="How much this issue is affecting your customer satisfaction scores"
               />

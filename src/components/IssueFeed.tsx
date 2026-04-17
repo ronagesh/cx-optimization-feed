@@ -104,11 +104,11 @@ export function IssueFeed({ issues, onSelectIssue }: IssueFeedProps) {
                   {/* Metric labels */}
                   <div className="mt-3 flex flex-wrap gap-3">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-xs text-gray-400">How common</span>
+                      <span className="text-xs text-gray-400">Frequency</span>
                       <ScoreLabel value={issue.scoreBreakdown.frequency} />
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-xs text-gray-400">CSAT Impact</span>
+                      <span className="text-xs text-gray-400">CSAT Risk</span>
                       <ScoreLabel value={issue.scoreBreakdown.csatImpact} />
                     </div>
                     <div className="flex items-center gap-1.5">
