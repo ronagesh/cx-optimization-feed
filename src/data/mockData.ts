@@ -3,9 +3,9 @@ import type { Issue } from '../types';
 export const ISSUES: Issue[] = [
   {
     id: 'issue-1',
-    title: 'Return Window Policy Misquoted',
+    title: 'Return Window Policy — Conflicting Answers',
     summary:
-      'The bot is telling customers they have 14 days to return items, but your policy is 30 days. This is causing confusion, escalations, and avoidable bad ratings.',
+      'Customers are frequently pushing back on the return window the bot quotes, citing a different policy on your website. The bot\'s answers on this topic are inconsistent across conversations and correlate strongly with escalations and poor ratings.',
     category: 'Returns & Refunds',
     status: 'new',
     priorityScore: 91,
@@ -46,12 +46,13 @@ export const ISSUES: Issue[] = [
       type: 'knowledge_base',
       title: 'Return Policy — Correct Window & Process',
       description:
-        'Add a clear, accurate knowledge base article about your 30-day return policy. The bot is currently pulling from an outdated source that states 14 days.',
+        'Add or update a knowledge base article that clearly states your return window. The bot has no authoritative source to reference, which is causing it to give inconsistent answers.',
       currentGap:
-        'No up-to-date article exists for "return window" or "how long do I have to return." The bot is falling back to a stale article that references 14 days.',
+        'No definitive article exists for "return window" or "how long do I have to return." Without a clear source, the bot is inconsistent — and customers are noticing the mismatch with what\'s on your website.',
       proposedArticle: `# Return Policy
 
-Customers may return most items within **30 days** of the delivery date for a full refund or exchange.
+Customers may return most items within **[X] days** of the delivery date for a full refund or exchange.
+*(Please confirm the correct return window and update before publishing.)*
 
 ## Eligibility
 - Items must be unworn, unwashed, and in original packaging with tags attached
