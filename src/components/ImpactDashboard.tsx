@@ -44,14 +44,19 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
   const before = data.slice(0, fixIdx);
   const after = data.slice(fixIdx);
 
+  const WINDOW = 2; // weeks
   const avg = (arr: typeof data, key: 'csat' | 'deflection') =>
-    arr.length ? arr.reduce((s, d) => s + d[key], 0) / arr.length : null;
+    arr.length ? Math.round(arr.reduce((s, d) => s + d[key], 0) / arr.length) : null;
 
-  // Baseline = avg before fix; after = avg since fix went live
-  const beforeCsat = avg(before, 'csat');
-  const beforeDeflection = avg(before, 'deflection');
-  const afterCsat = avg(after, 'csat');
-  const afterDeflection = avg(after, 'deflection');
+  // Before: last WINDOW weeks before fix (fixed baseline)
+  // After: last WINDOW weeks of post-fix data (rolling)
+  const beforeWindow = before.slice(-WINDOW);
+  const afterWindow = after.slice(-WINDOW);
+
+  const beforeCsat = avg(beforeWindow, 'csat');
+  const beforeDeflection = avg(beforeWindow, 'deflection');
+  const afterCsat = avg(afterWindow, 'csat');
+  const afterDeflection = avg(afterWindow, 'deflection');
 
   const csatLift = beforeCsat !== null && afterCsat !== null ? afterCsat - beforeCsat : null;
   const deflectionLift =
@@ -88,7 +93,7 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
               <TrendingUp size={13} />
               CSAT {csatLift > 0 ? '+' : ''}{Math.round(csatLift)} pts
               <span className="text-emerald-500 font-normal">
-                ({Math.round(beforeCsat!)} → {Math.round(afterCsat!)}) · since fix went live
+                ({beforeCsat} → {afterCsat}) · 2-wk avg
               </span>
             </div>
           ) : null}
@@ -97,7 +102,7 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
               <TrendingUp size={13} />
               Deflection {deflectionLift > 0 ? '+' : ''}{Math.round(deflectionLift)} pts
               <span className="text-blue-400 font-normal">
-                ({Math.round(beforeDeflection!)}% → {Math.round(afterDeflection!)}%) · since fix went live
+                ({beforeDeflection}% → {afterDeflection}%) · 2-wk avg
               </span>
             </div>
           ) : null}
@@ -172,7 +177,7 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
         <p className="text-xs text-gray-400 mt-2">
           Metrics measured on conversations in the <strong>{issue.category}</strong> category. CSAT shown out of 100.
           {fixWeekLabel
-            ? ` Dashed line marks when the fix was deployed (${fixWeekLabel}). Lift is the avg since deployment vs. avg before.`
+            ? ` Lift = avg of last 2 weeks after fix vs. avg of 2 weeks before fix. Dashed line = deployment (${fixWeekLabel}).`
             : ''}
         </p>
       </div>
