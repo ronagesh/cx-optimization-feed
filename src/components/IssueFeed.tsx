@@ -30,6 +30,39 @@ function StatusBadge({ status }: { status: Issue['status'] }) {
   );
 }
 
+function FilterDropdown({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: string | null;
+  options: { value: string; label: string }[];
+  onChange: (v: string | null) => void;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-sm font-semibold text-gray-700">{label}</span>
+      <select
+        value={value ?? ''}
+        onChange={(e) => onChange(e.target.value || null)}
+        className={`text-xs border rounded-lg px-2.5 py-1.5 pr-7 focus:outline-none focus:ring-2 focus:ring-brand-purple/30 focus:border-brand-purple transition-colors appearance-none bg-no-repeat cursor-pointer ${
+          value
+            ? 'border-brand-purple text-brand-purple bg-indigo-50'
+            : 'border-gray-200 text-gray-600 bg-white hover:border-gray-300'
+        }`}
+        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundPosition: 'right 8px center' }}
+      >
+        <option value="">All</option>
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>{o.label}</option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
 function ScoreLabel({ value }: { value: number }) {
   if (value >= 70) return <span className="text-xs font-medium text-red-600 bg-red-50 px-2 py-0.5 rounded-full">High</span>;
   if (value >= 40) return <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">Medium</span>;
@@ -118,61 +151,29 @@ export function IssueFeed({ issues, onSelectIssue }: IssueFeedProps) {
       </div>
 
       {/* Filters */}
-      <div className="flex items-center gap-6 mb-4 flex-wrap">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-sm font-semibold text-gray-700">Priority</span>
-          {priorities.map((p) => (
-            <button
-              key={p}
-              onClick={() => setPriorityFilter(priorityFilter === p ? null : p)}
-              className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
-                priorityFilter === p
-                  ? 'bg-brand-purple text-white border-brand-purple'
-                  : 'border-gray-200 text-gray-600 hover:border-gray-300'
-              }`}
-            >
-              {p.replace(' Priority', '')}
-            </button>
-          ))}
-        </div>
-        <div className="h-4 w-px bg-gray-200" />
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-sm font-semibold text-gray-700">Type</span>
-          {categories.map((c) => (
-            <button
-              key={c}
-              onClick={() => setCategoryFilter(categoryFilter === c ? null : c)}
-              className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
-                categoryFilter === c
-                  ? 'bg-brand-purple text-white border-brand-purple'
-                  : 'border-gray-200 text-gray-600 hover:border-gray-300'
-              }`}
-            >
-              {c}
-            </button>
-          ))}
-        </div>
-        <div className="h-4 w-px bg-gray-200" />
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-sm font-semibold text-gray-700">Product Line</span>
-          {productLines.map((pl) => (
-            <button
-              key={pl}
-              onClick={() => setProductLineFilter(productLineFilter === pl ? null : pl)}
-              className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
-                productLineFilter === pl
-                  ? 'bg-brand-purple text-white border-brand-purple'
-                  : 'border-gray-200 text-gray-600 hover:border-gray-300'
-              }`}
-            >
-              {pl}
-            </button>
-          ))}
-        </div>
+      <div className="flex items-center gap-3 mb-4 flex-wrap">
+        <FilterDropdown
+          label="Priority"
+          value={priorityFilter}
+          options={priorities.map((p) => ({ value: p, label: p.replace(' Priority', '') }))}
+          onChange={setPriorityFilter}
+        />
+        <FilterDropdown
+          label="Type"
+          value={categoryFilter}
+          options={categories.map((c) => ({ value: c, label: c }))}
+          onChange={setCategoryFilter}
+        />
+        <FilterDropdown
+          label="Product Line"
+          value={productLineFilter}
+          options={productLines.map((pl) => ({ value: pl, label: pl }))}
+          onChange={setProductLineFilter}
+        />
         {hasFilters && (
           <button
             onClick={clearFilters}
-            className="text-xs text-gray-400 hover:text-gray-600 transition-colors ml-auto"
+            className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
           >
             Clear filters
           </button>
