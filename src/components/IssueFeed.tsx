@@ -85,17 +85,17 @@ export function IssueFeed({ issues, onSelectIssue }: IssueFeedProps) {
           <p className="text-xs text-gray-400 mt-0.5">this week</p>
         </div>
         <div className="bg-white border border-gray-100 rounded-xl p-4">
-          <p className="text-xs text-gray-500 mb-1">Avg CSAT Lift</p>
+          <p className="text-xs text-gray-500 mb-1">CSAT Lift</p>
           <p className="text-2xl font-semibold text-emerald-600">{avgLift('csat')}</p>
           <p className="text-xs text-gray-400 mt-0.5">
-            {appliedCount > 0 ? 'pts · R7 avg' : 'apply fixes to see impact'}
+            {appliedCount > 0 ? 'pts · last 7 days' : 'apply fixes to see impact'}
           </p>
         </div>
         <div className="bg-white border border-gray-100 rounded-xl p-4">
-          <p className="text-xs text-gray-500 mb-1">Avg Deflection Lift</p>
+          <p className="text-xs text-gray-500 mb-1">Deflection Lift</p>
           <p className="text-2xl font-semibold text-emerald-600">{avgLift('deflection')}</p>
           <p className="text-xs text-gray-400 mt-0.5">
-            {appliedCount > 0 ? 'pts · R7 avg' : 'apply fixes to see impact'}
+            {appliedCount > 0 ? 'pts · last 7 days' : 'apply fixes to see impact'}
           </p>
         </div>
       </div>
