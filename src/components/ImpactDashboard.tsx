@@ -44,7 +44,7 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
   const before = data.slice(0, fixIdx);
   const after = data.slice(fixIdx);
 
-  const WINDOW = 2; // weeks
+  const WINDOW = 1; // weeks (R7)
   const avg = (arr: typeof data, key: 'csat' | 'deflection') =>
     arr.length ? Math.round(arr.reduce((s, d) => s + d[key], 0) / arr.length) : null;
 
@@ -93,7 +93,7 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
               <TrendingUp size={13} />
               CSAT {csatLift > 0 ? '+' : ''}{Math.round(csatLift)} pts
               <span className="text-emerald-500 font-normal">
-                ({beforeCsat} → {afterCsat}) · 2-wk avg
+                ({beforeCsat} → {afterCsat}) · R7
               </span>
             </div>
           ) : null}
@@ -102,7 +102,7 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
               <TrendingUp size={13} />
               Deflection {deflectionLift > 0 ? '+' : ''}{Math.round(deflectionLift)} pts
               <span className="text-blue-400 font-normal">
-                ({beforeDeflection}% → {afterDeflection}%) · 2-wk avg
+                ({beforeDeflection}% → {afterDeflection}%) · R7
               </span>
             </div>
           ) : null}
@@ -177,7 +177,7 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
         <p className="text-xs text-gray-400 mt-2">
           Metrics measured on conversations in the <strong>{issue.category}</strong> category. CSAT shown out of 100.
           {fixWeekLabel
-            ? ` Lift = avg of last 2 weeks after fix vs. avg of 2 weeks before fix. Dashed line = deployment (${fixWeekLabel}).`
+            ? ` Lift = R7 after fix vs. R7 baseline before fix. Dashed line = deployment (${fixWeekLabel}).`
             : ''}
         </p>
       </div>
