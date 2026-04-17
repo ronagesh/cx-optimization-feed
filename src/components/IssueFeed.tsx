@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { AlertCircle, TrendingDown, ChevronRight, CheckCircle2 } from 'lucide-react';
 import type { Issue } from '../types';
 
@@ -49,7 +50,17 @@ function computeR7Lift(issue: Issue, key: 'csat' | 'deflection'): number | null 
 export function IssueFeed({ issues, onSelectIssue }: IssueFeedProps) {
   const appliedIssues = issues.filter((i) => i.status === 'fix_applied');
   const appliedCount = appliedIssues.length;
-  const sortedIssues = [...issues].sort((a, b) => b.priorityScore - a.priorityScore);
+
+  const [priorityFilter, setPriorityFilter] = useState<string | null>(null);
+  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
+
+  const categories = [...new Set(issues.map((i) => i.category))];
+  const priorities = ['High Priority', 'Medium Priority', 'Low Priority'];
+
+  const sortedIssues = [...issues]
+    .sort((a, b) => b.priorityScore - a.priorityScore)
+    .filter((i) => !priorityFilter || priorityLabel(i.priorityScore).label === priorityFilter)
+    .filter((i) => !categoryFilter || i.category === categoryFilter);
 
   const avgLift = (key: 'csat' | 'deflection'): string => {
     if (!appliedCount) return '—';
@@ -100,8 +111,64 @@ export function IssueFeed({ issues, onSelectIssue }: IssueFeedProps) {
         </div>
       </div>
 
+      {/* Filters */}
+      <div className="flex items-center gap-6 mb-4">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-xs font-medium text-gray-400">Priority</span>
+          {priorities.map((p) => (
+            <button
+              key={p}
+              onClick={() => setPriorityFilter(priorityFilter === p ? null : p)}
+              className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                priorityFilter === p
+                  ? 'bg-brand-purple text-white border-brand-purple'
+                  : 'border-gray-200 text-gray-600 hover:border-gray-300'
+              }`}
+            >
+              {p.replace(' Priority', '')}
+            </button>
+          ))}
+        </div>
+        <div className="h-4 w-px bg-gray-200" />
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-xs font-medium text-gray-400">Type</span>
+          {categories.map((c) => (
+            <button
+              key={c}
+              onClick={() => setCategoryFilter(categoryFilter === c ? null : c)}
+              className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                categoryFilter === c
+                  ? 'bg-brand-purple text-white border-brand-purple'
+                  : 'border-gray-200 text-gray-600 hover:border-gray-300'
+              }`}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+        {(priorityFilter || categoryFilter) && (
+          <button
+            onClick={() => { setPriorityFilter(null); setCategoryFilter(null); }}
+            className="text-xs text-gray-400 hover:text-gray-600 transition-colors ml-auto"
+          >
+            Clear filters
+          </button>
+        )}
+      </div>
+
       {/* Issue list */}
       <div className="space-y-3">
+        {sortedIssues.length === 0 && (
+          <div className="text-center py-12 text-gray-400 text-sm">
+            No issues match the selected filters.{' '}
+            <button
+              onClick={() => { setPriorityFilter(null); setCategoryFilter(null); }}
+              className="text-brand-purple hover:underline"
+            >
+              Clear filters
+            </button>
+          </div>
+        )}
         {sortedIssues.map((issue) => {
           const priority = priorityLabel(issue.priorityScore);
           return (
