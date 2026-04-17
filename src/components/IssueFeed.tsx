@@ -87,20 +87,29 @@ export function IssueFeed({ issues, onSelectIssue }: IssueFeedProps) {
   const [priorityFilter, setPriorityFilter] = useState<string | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   const [productLineFilter, setProductLineFilter] = useState<string | null>(null);
+  const [confidenceFilter, setConfidenceFilter] = useState<string | null>(null);
 
   const categories = [...new Set(issues.map((i) => i.category))];
   const productLines = [...new Set(issues.map((i) => i.productLine))];
   const priorities = ['High Priority', 'Medium Priority', 'Low Priority'];
+  const confidenceLevels = ['High', 'Medium', 'Low'];
+
+  function confidenceLabel(score: number) {
+    if (score >= 70) return 'High';
+    if (score >= 40) return 'Medium';
+    return 'Low';
+  }
 
   const sortedIssues = [...issues]
     .sort((a, b) => b.priorityScore - a.priorityScore)
     .filter((i) => i.status !== 'fix_applied')
     .filter((i) => !priorityFilter || priorityLabel(i.priorityScore).label === priorityFilter)
     .filter((i) => !categoryFilter || i.category === categoryFilter)
-    .filter((i) => !productLineFilter || i.productLine === productLineFilter);
+    .filter((i) => !productLineFilter || i.productLine === productLineFilter)
+    .filter((i) => !confidenceFilter || confidenceLabel(i.scoreBreakdown.confidenceScore) === confidenceFilter);
 
-  const hasFilters = !!(priorityFilter || categoryFilter || productLineFilter);
-  const clearFilters = () => { setPriorityFilter(null); setCategoryFilter(null); setProductLineFilter(null); };
+  const hasFilters = !!(priorityFilter || categoryFilter || productLineFilter || confidenceFilter);
+  const clearFilters = () => { setPriorityFilter(null); setCategoryFilter(null); setProductLineFilter(null); setConfidenceFilter(null); };
 
   const avgLift = (key: 'csat' | 'deflection'): string => {
     if (!appliedCount) return '—';
@@ -170,6 +179,12 @@ export function IssueFeed({ issues, onSelectIssue }: IssueFeedProps) {
           value={productLineFilter}
           options={productLines.map((pl) => ({ value: pl, label: pl }))}
           onChange={setProductLineFilter}
+        />
+        <FilterDropdown
+          label="Confidence"
+          value={confidenceFilter}
+          options={confidenceLevels.map((c) => ({ value: c, label: c }))}
+          onChange={setConfidenceFilter}
         />
         {hasFilters && (
           <button
