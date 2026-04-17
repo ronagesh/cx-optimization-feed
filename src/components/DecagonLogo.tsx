@@ -34,9 +34,6 @@ export function DecagonLogo() {
         {/* Center vertical */}
         <line x1="30" y1="10" x2="30" y2="30" stroke="#0A0A0B" strokeWidth="2" strokeDasharray="0" />
       </svg>
-      <span className="font-heading font-bold text-base tracking-widest uppercase text-brand-dark">
-        Optify
-      </span>
     </div>
   );
 }
