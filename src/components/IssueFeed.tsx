@@ -114,11 +114,11 @@ export function IssueFeed({ issues, onSelectIssue }: IssueFeedProps) {
                       <ScoreBar value={issue.scoreBreakdown.frequency} />
                     </div>
                     <div>
-                      <p className="text-xs text-gray-400 mb-0.5">CSAT drag</p>
+                      <p className="text-xs text-gray-400 mb-0.5">CSAT Impact</p>
                       <ScoreBar value={issue.scoreBreakdown.csatImpact} />
                     </div>
                     <div>
-                      <p className="text-xs text-gray-400 mb-0.5">Deflection drag</p>
+                      <p className="text-xs text-gray-400 mb-0.5">Escalation Volume</p>
                       <ScoreBar value={issue.scoreBreakdown.deflectionImpact} />
                     </div>
                   </div>

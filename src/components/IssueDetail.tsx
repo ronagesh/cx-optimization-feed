@@ -220,15 +220,15 @@ export function IssueDetail({ issue, onBack, onApplyFix }: IssueDetailProps) {
                 color="bg-brand-purple"
               />
               <MetricExplainer
-                label="CSAT drag"
+                label="CSAT Impact"
                 value={issue.scoreBreakdown.csatImpact}
-                description="How much this issue is pulling your satisfaction scores down"
+                description="How much this issue is affecting your customer satisfaction scores"
                 color="bg-red-400"
               />
               <MetricExplainer
-                label="Deflection drag"
+                label="Escalation Volume"
                 value={issue.scoreBreakdown.deflectionImpact}
-                description="How often this issue prevents the bot from fully resolving the conversation"
+                description="How often this issue leads to conversations being handed off to a human agent"
                 color="bg-amber-400"
               />
               <MetricExplainer
