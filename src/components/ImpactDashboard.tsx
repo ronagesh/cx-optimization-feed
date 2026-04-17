@@ -10,7 +10,7 @@ import {
   Legend,
 } from 'recharts';
 import { TrendingUp, Clock } from 'lucide-react';
-import type { Issue } from '../types';
+import type { Issue, ImpactDataPoint } from '../types';
 
 interface ImpactDashboardProps {
   issues: Issue[];
@@ -19,23 +19,73 @@ interface ImpactDashboardProps {
 
 interface CustomTooltipProps {
   active?: boolean;
-  payload?: Array<{ name: string; value: number; color: string }>;
+  payload?: Array<{ name: string; value: number | null; color: string; strokeDasharray?: string }>;
   label?: string;
 }
 
 function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (!active || !payload?.length) return null;
+  const visible = payload.filter((p) => p.value !== null && p.value !== undefined);
+  if (!visible.length) return null;
   return (
     <div className="bg-white border border-gray-100 rounded-lg shadow-md px-3 py-2.5 text-xs">
       <p className="font-medium text-gray-700 mb-1">{label}</p>
-      {payload.map((p) => (
+      {visible.map((p) => (
         <p key={p.name} style={{ color: p.color }} className="tabular-nums">
           {p.name}: <span className="font-semibold">{p.value}</span>
-          {p.name === 'CSAT' ? ' / 100' : '%'}
+          {p.name === 'CSAT' || p.name === 'CSAT (projected)' ? ' / 100' : '%'}
         </p>
       ))}
     </div>
   );
+}
+
+// Linear regression over an array of values (x = index 0..n-1)
+function linReg(values: number[]): { slope: number; intercept: number } {
+  const n = values.length;
+  if (n < 2) return { slope: 0, intercept: values[0] ?? 0 };
+  let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+  for (let i = 0; i < n; i++) {
+    sumX += i; sumY += values[i];
+    sumXY += i * values[i]; sumX2 += i * i;
+  }
+  const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+  const intercept = (sumY - slope * sumX) / n;
+  return { slope, intercept };
+}
+
+function stdDev(values: number[]): number {
+  if (values.length < 2) return 0;
+  const mean = values.reduce((s, v) => s + v, 0) / values.length;
+  const variance = values.reduce((s, v) => s + (v - mean) ** 2, 0) / (values.length - 1);
+  return Math.sqrt(variance);
+}
+
+// 95% CI half-width: 1.96 * sd / sqrt(n), rounded to 1 decimal
+function ci95(values: number[]): number {
+  if (values.length < 2) return 0;
+  return Math.round(1.96 * stdDev(values) / Math.sqrt(values.length));
+}
+
+function buildChartData(
+  data: ImpactDataPoint[],
+  fixIdx: number
+): Array<ImpactDataPoint & { csatCounterfactual: number | null; deflectionCounterfactual: number | null }> {
+  const before = data.slice(0, fixIdx);
+  if (!before.length || fixIdx >= data.length) {
+    return data.map((d) => ({ ...d, csatCounterfactual: null, deflectionCounterfactual: null }));
+  }
+  const csatReg = linReg(before.map((d) => d.csat));
+  const deflReg = linReg(before.map((d) => d.deflection));
+  return data.map((d, i) => ({
+    ...d,
+    csatCounterfactual: i >= fixIdx
+      ? Math.round(csatReg.intercept + csatReg.slope * i)
+      : null,
+    deflectionCounterfactual: i >= fixIdx
+      ? Math.round(deflReg.intercept + deflReg.slope * i)
+      : null,
+  }));
 }
 
 function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void }) {
@@ -44,11 +94,10 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
   const before = data.slice(0, fixIdx);
   const after = data.slice(fixIdx);
 
-  const WINDOW = 7; // days (true R7)
+  const WINDOW = 7;
   const avg = (arr: typeof data, key: 'csat' | 'deflection') =>
-    arr.length ? Math.round(arr.reduce((s, d) => s + d[key], 0) / arr.length) : null;
+    arr.length ? arr.reduce((s, d) => s + d[key], 0) / arr.length : null;
 
-  // Before: last 7 days before fix; After: last 7 days of post-fix data
   const beforeWindow = before.slice(-WINDOW);
   const afterWindow = after.slice(-WINDOW);
 
@@ -63,7 +112,12 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
       ? afterDeflection - beforeDeflection
       : null;
 
+  // Confidence intervals on lift (propagate CI of after window)
+  const csatCI = afterWindow.length >= 2 ? ci95(afterWindow.map((d) => d.csat)) : null;
+  const deflCI = afterWindow.length >= 2 ? ci95(afterWindow.map((d) => d.deflection)) : null;
+
   const fixDateLabel = data[fixIdx]?.date;
+  const chartData = buildChartData(data, fixIdx);
 
   const timeToFix = (() => {
     if (!issue.detectedDate || !issue.fixAppliedDate) return null;
@@ -106,13 +160,16 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
         </div>
 
         {/* Stat pills */}
-        <div className="flex flex-wrap gap-3 mt-3 mb-4">
+        <div className="flex flex-wrap gap-3 mt-3 mb-1">
           {csatLift !== null ? (
             <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 text-xs font-medium px-3 py-1.5 rounded-lg">
               <TrendingUp size={13} />
               CSAT {csatLift > 0 ? '+' : ''}{Math.round(csatLift)} pts
+              {csatCI !== null && csatCI > 0 && (
+                <span className="text-emerald-500 font-normal">±{csatCI}</span>
+              )}
               <span className="text-emerald-500 font-normal">
-                ({beforeCsat} → {afterCsat}) · R7
+                ({Math.round(beforeCsat!)} → {Math.round(afterCsat!)}) · R7
               </span>
             </div>
           ) : null}
@@ -120,16 +177,26 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
             <div className="flex items-center gap-1.5 bg-blue-50 text-blue-700 text-xs font-medium px-3 py-1.5 rounded-lg">
               <TrendingUp size={13} />
               Deflection {deflectionLift > 0 ? '+' : ''}{Math.round(deflectionLift)} pts
+              {deflCI !== null && deflCI > 0 && (
+                <span className="text-blue-400 font-normal">±{deflCI}</span>
+              )}
               <span className="text-blue-400 font-normal">
-                ({beforeDeflection}% → {afterDeflection}%) · R7
+                ({Math.round(beforeDeflection!)}% → {Math.round(afterDeflection!)}%) · R7
               </span>
             </div>
           ) : null}
         </div>
 
+        {/* Sample size */}
+        {issue.sampleSize != null && (
+          <p className="text-xs text-gray-400 mb-3">
+            Based on {issue.sampleSize.toLocaleString()} conversations
+          </p>
+        )}
+
         {/* Chart */}
         <ResponsiveContainer width="100%" height={200}>
-          <LineChart data={data} margin={{ top: 4, right: 8, bottom: 0, left: -10 }}>
+          <LineChart data={chartData} margin={{ top: 4, right: 8, bottom: 0, left: -10 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" />
             <XAxis
               dataKey="date"
@@ -169,6 +236,7 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
                 label={{ value: 'Fix applied', position: 'insideTopLeft', fontSize: 10, fill: '#5754FF' }}
               />
             )}
+            {/* Actual lines */}
             <Line
               yAxisId="csat"
               type="monotone"
@@ -189,14 +257,44 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
               dot={false}
               activeDot={{ r: 3 }}
             />
+            {/* Counterfactual lines (dashed) */}
+            {fixIdx < data.length && (
+              <>
+                <Line
+                  yAxisId="csat"
+                  type="monotone"
+                  dataKey="csatCounterfactual"
+                  name="CSAT (projected)"
+                  stroke="#5754FF"
+                  strokeWidth={1.5}
+                  strokeDasharray="5 4"
+                  dot={false}
+                  activeDot={false}
+                  connectNulls={false}
+                  legendType="none"
+                />
+                <Line
+                  yAxisId="deflection"
+                  type="monotone"
+                  dataKey="deflectionCounterfactual"
+                  name="Deflection (projected)"
+                  stroke="#00AEC2"
+                  strokeWidth={1.5}
+                  strokeDasharray="5 4"
+                  dot={false}
+                  activeDot={false}
+                  connectNulls={false}
+                  legendType="none"
+                />
+              </>
+            )}
           </LineChart>
         </ResponsiveContainer>
 
         <p className="text-xs text-gray-400 mt-2">
-          Metrics measured on conversations in the <strong>{issue.category}</strong> category. CSAT shown out of 100.
-          {fixDateLabel
-            ? ` Lift = 7-day rolling avg after fix vs. 7-day baseline before fix. Dashed line = deployment (${fixDateLabel}).`
-            : ''}
+          CSAT out of 100. Lift = R7 avg after fix vs. R7 baseline before.
+          {fixDateLabel ? ` Dashed lines show projected trend without the fix (counterfactual).` : ''}
+          {(csatCI || deflCI) ? ' ±CI = 95% confidence interval.' : ''}
         </p>
       </div>
     </div>

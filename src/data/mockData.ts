@@ -65,8 +65,10 @@ export const ISSUES: Issue[] = [
       csatImpact: 90,
       deflectionImpact: 85,
       businessImpact: 72,
-      modelConfidence: 97,
+      fixEffort: 18,
+      confidenceScore: 97,
     },
+    sampleSize: 3241,
     detectedAt: 'Detected across last 7 days',
     detectedDate: '2026-03-03',
     fixAppliedDate: '2026-03-31',
@@ -77,6 +79,8 @@ export const ISSUES: Issue[] = [
           'Hi, I bought a jacket 18 days ago and I want to return it. Is that still possible?',
         agentResponse:
           'Unfortunately our return window is 14 days, so your order is no longer eligible for a return. I apologize for the inconvenience.',
+        improvedResponse:
+          'Yes, absolutely! Our return window is 30 days from delivery, so your jacket is well within the eligible period. You can start your return at example.com/returns — it only takes a minute and includes a prepaid label.',
         outcome: 'escalated',
       },
       {
@@ -85,6 +89,8 @@ export const ISSUES: Issue[] = [
           'Your website says 30-day returns but the chat bot told me I only have 14 days. Which is it?',
         agentResponse:
           'I apologize for any confusion. Our return policy allows returns within 14 days of purchase.',
+        improvedResponse:
+          'You\'re right — our return policy is 30 days from delivery. I\'m sorry for the confusion earlier. Head to example.com/returns to get started and I\'ll walk you through it if needed.',
         outcome: 'poor_rating',
       },
       {
@@ -92,6 +98,8 @@ export const ISSUES: Issue[] = [
         customerMessage: 'Can I return shoes I bought 3 weeks ago?',
         agentResponse:
           'I\'m sorry, our return policy only covers items returned within 14 days. Since it\'s been 3 weeks, we\'re unable to process a return.',
+        improvedResponse:
+          'Yes! Since your purchase was 3 weeks ago and our return window is 30 days from delivery, you\'re still within the eligible period. Visit example.com/returns to start your return.',
         outcome: 'escalated',
       },
     ],
@@ -144,8 +152,10 @@ Prefer an exchange? Select "Exchange" in the Returns Portal and we'll ship your 
       csatImpact: 78,
       deflectionImpact: 88,
       businessImpact: 45,
-      modelConfidence: 92,
+      fixEffort: 22,
+      confidenceScore: 92,
     },
+    sampleSize: 2847,
     detectedAt: 'Detected across last 7 days',
     detectedDate: '2026-03-03',
     fixAppliedDate: '2026-03-31',
@@ -156,6 +166,8 @@ Prefer an exchange? Select "Exchange" in the Returns Portal and we'll ship your 
           "I can't find my tracking number. My order shipped 2 days ago but I don't know where it is.",
         agentResponse:
           'You should have received a shipping confirmation email with your tracking number. Please check your inbox and spam folder.',
+        improvedResponse:
+          "No problem — you can track your order directly at example.com/track. Just enter your order number and the email you used at checkout. No need to dig through your inbox.",
         outcome: 'poor_rating',
       },
       {
@@ -164,6 +176,8 @@ Prefer an exchange? Select "Exchange" in the Returns Portal and we'll ship your 
           'I already checked my email — there is no tracking link. Can you just tell me where my order is?',
         agentResponse:
           "I'm sorry to hear that. The tracking information is sent via email once your order ships. If you haven't received it, please allow 24 hours.",
+        improvedResponse:
+          "Got it — here's your direct tracking link: example.com/track. Enter your order number and email address and you'll see your live shipment status right away.",
         outcome: 'escalated',
       },
     ],
@@ -215,7 +229,8 @@ Please wait 24 hours — packages are sometimes marked delivered early. If it st
       csatImpact: 65,
       deflectionImpact: 72,
       businessImpact: 60,
-      modelConfidence: 88,
+      fixEffort: 30,
+      confidenceScore: 88,
     },
     detectedAt: 'Detected across last 14 days',
     conversationSamples: [
@@ -284,7 +299,8 @@ For specific rate quotes or shipping to a country not listed above, please [cont
       csatImpact: 55,
       deflectionImpact: 58,
       businessImpact: 62,
-      modelConfidence: 79,
+      fixEffort: 25,
+      confidenceScore: 79,
     },
     detectedAt: 'Detected across last 14 days',
     conversationSamples: [
@@ -351,7 +367,8 @@ If your code should work but isn't, [contact us](https://example.com/contact) an
       csatImpact: 38,
       deflectionImpact: 40,
       businessImpact: 28,
-      modelConfidence: 83,
+      fixEffort: 15,
+      confidenceScore: 83,
     },
     detectedAt: 'Detected across last 21 days',
     conversationSamples: [
