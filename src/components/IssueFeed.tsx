@@ -208,6 +208,8 @@ export function IssueFeed({ issues, onSelectIssue }: IssueFeedProps) {
                       {priority.label}
                     </span>
                     <span className="text-xs text-gray-400">{issue.category}</span>
+                    <span className="text-xs text-gray-400">·</span>
+                    <span className="text-xs text-gray-400">{issue.productLine}</span>
                     {issue.status === 'fix_applied' && <StatusBadge status={issue.status} />}
                   </div>
                   <h2 className="font-semibold text-gray-900 text-base leading-snug mb-1">

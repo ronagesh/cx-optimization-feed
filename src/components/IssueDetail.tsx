@@ -105,6 +105,9 @@ export function IssueDetail({ issue, onBack, onApplyFix }: IssueDetailProps) {
               <span className="text-xs font-medium text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
                 {issue.category}
               </span>
+              <span className="text-xs font-medium text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+                {issue.productLine}
+              </span>
               <span className="text-xs text-gray-400">{issue.detectedAt}</span>
             </div>
             <h1 className="font-heading font-bold text-2xl text-gray-900 leading-snug">
