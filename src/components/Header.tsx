@@ -10,7 +10,9 @@ export function Header({ onNavigate, activeView }: HeaderProps) {
     <header className="bg-white border-b border-gray-100 sticky top-0 z-10">
       <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-8">
-          <button onClick={() => onNavigate('feed')} className="cursor-pointer">
+          <button onClick={() => onNavigate('feed')} className="cursor-pointer flex items-center gap-3">
+            <span className="font-heading font-bold text-base text-gray-900">ShopCo</span>
+            <span className="text-gray-200">|</span>
             <DecagonLogo />
           </button>
           <nav className="flex items-center gap-1">
