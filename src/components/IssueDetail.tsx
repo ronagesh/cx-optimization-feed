@@ -72,7 +72,7 @@ function resolveArticle(template: string, vars: Record<string, string>): string 
 export function IssueDetail({ issue, onBack, onApplyFix }: IssueDetailProps) {
   const variables = issue.suggestedFix.variables ?? [];
   const [varValues, setVarValues] = useState<Record<string, string>>(
-    Object.fromEntries(variables.map((v) => [v.key, '']))
+    Object.fromEntries(variables.map((v) => [v.key, v.defaultValue ?? '']))
   );
   const [isEditing, setIsEditing] = useState(false);
   const [showConversations, setShowConversations] = useState(true);
@@ -96,11 +96,13 @@ export function IssueDetail({ issue, onBack, onApplyFix }: IssueDetailProps) {
   };
 
   const handleDeploy = () => {
+    const finalArticle = resolveArticle(editedArticle, varValues);
+    setEditedArticle(finalArticle);
     setDeploying(true);
     setTimeout(() => {
       setFixStage('deployed');
       setDeploying(false);
-      onApplyFix(issue.id, editedArticle);
+      onApplyFix(issue.id, finalArticle);
     }, 1200);
   };
 

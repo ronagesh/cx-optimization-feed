@@ -111,7 +111,7 @@ export const ISSUES: Issue[] = [
       currentGap:
         'No definitive article exists for "return window" or "how long do I have to return." Without a clear source, the bot is inconsistent — and customers are noticing the mismatch with what\'s on your website.',
       variables: [
-        { key: 'returnWindow', label: 'Return window', placeholder: 'e.g. 30 days' },
+        { key: 'returnWindow', label: 'Return window', placeholder: 'e.g. 30 days', defaultValue: '30 days' },
       ],
       proposedArticle: `# Return Policy
 

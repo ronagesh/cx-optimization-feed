@@ -18,9 +18,10 @@ export interface ScoreBreakdown {
 }
 
 export interface FixVariable {
-  key: string;       // token in article, e.g. "returnWindow"
-  label: string;     // shown to user, e.g. "Return window"
-  placeholder: string; // input hint, e.g. "e.g. 30 days"
+  key: string;          // token in article, e.g. "returnWindow"
+  label: string;        // shown to user, e.g. "Return window"
+  placeholder: string;  // input hint, e.g. "e.g. 30 days"
+  defaultValue?: string; // pre-filled value (used when fix is already applied)
 }
 
 export interface SuggestedFix {
