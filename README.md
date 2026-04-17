@@ -1,6 +1,6 @@
 # Hillclimbing Agent
 
-A prototype of a customer-facing optimization product for AI support teams. Built for customer ops and support leads at e-commerce companies running trials of AI customer support software, it surfaces the highest-priority issues degrading CSAT and deflection, explains why each issue matters in plain language, and guides users through a two-step fix deployment flow (stage → deploy) with live KB article previews. Every deployed fix is tracked in an Impact Tracker showing before/after CSAT and deflection using a 7-day rolling average, confidence intervals on lift figures, and a counterfactual line showing where metrics would have trended without the fix.
+A prototype of a customer-facing optimization product for AI support teams. Built for customer ops and support leads running trials of AI customer support software, it surfaces the highest-priority issues degrading CSAT and deflection, explains why each issue matters in plain language, and guides users through a two-step fix deployment flow (stage → deploy) with live KB article previews. Every deployed fix is tracked in an Impact Tracker showing before/after CSAT and deflection using a 7-day rolling average, confidence intervals on lift figures, and a counterfactual line showing where metrics would have trended without the fix.
 
 **Live demo:** [cx-optimization-feed.vercel.app](https://cx-optimization-feed.vercel.app)
 
