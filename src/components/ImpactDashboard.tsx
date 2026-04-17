@@ -142,12 +142,19 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
           </div>
           <div className="flex items-center gap-4 shrink-0">
             {issue.fixAppliedDate && (
-              <div className="text-right">
-                <p className="text-xs text-gray-400">Fix applied</p>
-                <p className="text-xs font-medium text-gray-700">
-                  {new Date(issue.fixAppliedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                  {timeToFix && <span className="text-gray-400 font-normal"> · {timeToFix} to fix</span>}
-                </p>
+              <div className="text-right space-y-1">
+                <div>
+                  <p className="text-xs text-gray-400">Fix applied</p>
+                  <p className="text-xs font-medium text-gray-700">
+                    {new Date(issue.fixAppliedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </p>
+                </div>
+                {timeToFix && (
+                  <div>
+                    <p className="text-xs text-gray-400">Time to resolve</p>
+                    <p className="text-xs font-medium text-gray-700">{timeToFix}</p>
+                  </div>
+                )}
               </div>
             )}
             <button
