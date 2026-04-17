@@ -80,7 +80,7 @@ export const ISSUES: Issue[] = [
         agentResponse:
           'Unfortunately our return window is 14 days, so your order is no longer eligible for a return. I apologize for the inconvenience.',
         improvedResponse:
-          'Yes, absolutely! Our return window is 30 days from delivery, so your jacket is well within the eligible period. You can start your return at example.com/returns — it only takes a minute and includes a prepaid label.',
+          'Yes, absolutely! Our return window is {{returnWindow}} from delivery, so your jacket is well within the eligible period. You can start your return at example.com/returns — it only takes a minute and includes a prepaid label.',
         outcome: 'escalated',
       },
       {
@@ -90,7 +90,7 @@ export const ISSUES: Issue[] = [
         agentResponse:
           'I apologize for any confusion. Our return policy allows returns within 14 days of purchase.',
         improvedResponse:
-          'You\'re right — our return policy is 30 days from delivery. I\'m sorry for the confusion earlier. Head to example.com/returns to get started and I\'ll walk you through it if needed.',
+          'You\'re right — our return policy is {{returnWindow}} from delivery. I\'m sorry for the confusion earlier. Head to example.com/returns to get started and I\'ll walk you through it if needed.',
         outcome: 'poor_rating',
       },
       {
@@ -99,7 +99,7 @@ export const ISSUES: Issue[] = [
         agentResponse:
           'I\'m sorry, our return policy only covers items returned within 14 days. Since it\'s been 3 weeks, we\'re unable to process a return.',
         improvedResponse:
-          'Yes! Since your purchase was 3 weeks ago and our return window is 30 days from delivery, you\'re still within the eligible period. Visit example.com/returns to start your return.',
+          'Yes! Since your purchase was 3 weeks ago and our return window is {{returnWindow}} from delivery, you\'re still within the eligible period. Visit example.com/returns to start your return.',
         outcome: 'escalated',
       },
     ],

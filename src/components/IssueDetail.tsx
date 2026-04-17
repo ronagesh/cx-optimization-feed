@@ -193,7 +193,7 @@ export function IssueDetail({ issue, onBack, onApplyFix }: IssueDetailProps) {
                           </div>
                           <div className="flex-1">
                             <p className="text-sm text-gray-700 leading-relaxed">
-                              {showImproved ? sample.improvedResponse : sample.agentResponse}
+                              {showImproved ? resolveArticle(sample.improvedResponse!, varValues) : sample.agentResponse}
                             </p>
                             {showImproved && (
                               <p className="text-xs text-emerald-600 mt-1 font-medium">Simulated response with fix applied</p>
