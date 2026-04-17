@@ -31,7 +31,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
       {payload.map((p) => (
         <p key={p.name} style={{ color: p.color }} className="tabular-nums">
           {p.name}: <span className="font-semibold">{p.value}</span>
-          {p.name === 'CSAT' ? ' / 5' : '%'}
+          {p.name === 'CSAT' ? ' / 100' : '%'}
         </p>
       ))}
     </div>
@@ -44,13 +44,15 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
   const before = data.slice(0, fixIdx);
   const after = data.slice(fixIdx);
 
-  const avgBefore = (arr: typeof data, key: 'csat' | 'deflection') =>
+  const avg = (arr: typeof data, key: 'csat' | 'deflection') =>
     arr.length ? arr.reduce((s, d) => s + d[key], 0) / arr.length : null;
 
-  const beforeCsat = avgBefore(before, 'csat');
-  const afterCsat = avgBefore(after, 'csat');
-  const beforeDeflection = avgBefore(before, 'deflection');
-  const afterDeflection = avgBefore(after, 'deflection');
+  // Baseline = avg before fix; "last 7 days" = most recent data point
+  const beforeCsat = avg(before, 'csat');
+  const beforeDeflection = avg(before, 'deflection');
+  const lastPoint = after.length ? after[after.length - 1] : null;
+  const afterCsat = lastPoint?.csat ?? null;
+  const afterDeflection = lastPoint?.deflection ?? null;
 
   const csatLift = beforeCsat !== null && afterCsat !== null ? afterCsat - beforeCsat : null;
   const deflectionLift =
@@ -85,20 +87,18 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
           {csatLift !== null ? (
             <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 text-xs font-medium px-3 py-1.5 rounded-lg">
               <TrendingUp size={13} />
-              CSAT {csatLift > 0 ? '+' : ''}
-              {csatLift.toFixed(1)} pts
+              CSAT {csatLift > 0 ? '+' : ''}{Math.round(csatLift)} pts
               <span className="text-emerald-500 font-normal">
-                ({beforeCsat?.toFixed(1)} → {afterCsat?.toFixed(1)})
+                ({Math.round(beforeCsat!)} → {Math.round(afterCsat!)}) · last 7 days
               </span>
             </div>
           ) : null}
           {deflectionLift !== null ? (
             <div className="flex items-center gap-1.5 bg-blue-50 text-blue-700 text-xs font-medium px-3 py-1.5 rounded-lg">
               <TrendingUp size={13} />
-              Deflection {deflectionLift > 0 ? '+' : ''}
-              {deflectionLift.toFixed(0)} pts
+              Deflection {deflectionLift > 0 ? '+' : ''}{Math.round(deflectionLift)} pts
               <span className="text-blue-400 font-normal">
-                ({beforeDeflection?.toFixed(0)}% → {afterDeflection?.toFixed(0)}%)
+                ({Math.round(beforeDeflection!)}% → {Math.round(afterDeflection!)}%) · last 7 days
               </span>
             </div>
           ) : null}
@@ -117,11 +117,11 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
             <XAxis dataKey="week" tick={{ fontSize: 11, fill: '#9CA3AF' }} tickLine={false} axisLine={false} />
             <YAxis
               yAxisId="csat"
-              domain={[2.5, 5]}
+              domain={[40, 100]}
               tick={{ fontSize: 11, fill: '#9CA3AF' }}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(v) => v.toFixed(1)}
+              tickFormatter={(v) => `${v}`}
             />
             <YAxis
               yAxisId="deflection"
@@ -171,9 +171,9 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
         </ResponsiveContainer>
 
         <p className="text-xs text-gray-400 mt-2">
-          Metrics measured on conversations in the <strong>{issue.category}</strong> category.
+          Metrics measured on conversations in the <strong>{issue.category}</strong> category. CSAT shown out of 100.
           {fixWeekLabel
-            ? ` Dashed line marks when the fix was deployed (${fixWeekLabel}).`
+            ? ` Dashed line marks when the fix was deployed (${fixWeekLabel}). Lift calculated vs. pre-fix average.`
             : ''}
         </p>
       </div>
