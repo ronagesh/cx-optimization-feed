@@ -49,10 +49,12 @@ export const ISSUES: Issue[] = [
         'Add or update a knowledge base article that clearly states your return window. The bot has no authoritative source to reference, which is causing it to give inconsistent answers.',
       currentGap:
         'No definitive article exists for "return window" or "how long do I have to return." Without a clear source, the bot is inconsistent — and customers are noticing the mismatch with what\'s on your website.',
+      variables: [
+        { key: 'returnWindow', label: 'Return window', placeholder: 'e.g. 30 days' },
+      ],
       proposedArticle: `# Return Policy
 
-Customers may return most items within **[X] days** of the delivery date for a full refund or exchange.
-*(Please confirm the correct return window and update before publishing.)*
+Customers may return most items within **{{returnWindow}}** of the delivery date for a full refund or exchange.
 
 ## Eligibility
 - Items must be unworn, unwashed, and in original packaging with tags attached

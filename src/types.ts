@@ -15,12 +15,19 @@ export interface ScoreBreakdown {
   modelConfidence: number; // 0–100: how confident the model is this is real
 }
 
+export interface FixVariable {
+  key: string;       // token in article, e.g. "returnWindow"
+  label: string;     // shown to user, e.g. "Return window"
+  placeholder: string; // input hint, e.g. "e.g. 30 days"
+}
+
 export interface SuggestedFix {
   type: 'knowledge_base';
   title: string;
   description: string;
   currentGap: string;
   proposedArticle: string;
+  variables?: FixVariable[];
 }
 
 export interface ImpactDataPoint {

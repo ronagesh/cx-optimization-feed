@@ -50,12 +50,33 @@ function MetricExplainer({
   );
 }
 
+function resolveArticle(template: string, vars: Record<string, string>): string {
+  return Object.entries(vars).reduce(
+    (text, [key, value]) =>
+      text.replace(new RegExp(`\\{\\{${key}\\}\\}`, 'g'), value || `{{${key}}}`),
+    template
+  );
+}
+
 export function IssueDetail({ issue, onBack, onApplyFix }: IssueDetailProps) {
-  const [editedArticle, setEditedArticle] = useState(issue.suggestedFix.proposedArticle);
+  const variables = issue.suggestedFix.variables ?? [];
+  const [varValues, setVarValues] = useState<Record<string, string>>(
+    Object.fromEntries(variables.map((v) => [v.key, '']))
+  );
   const [isEditing, setIsEditing] = useState(false);
   const [showConversations, setShowConversations] = useState(true);
   const [applying, setApplying] = useState(false);
   const [applied, setApplied] = useState(issue.status === 'fix_applied');
+
+  const resolvedArticle = resolveArticle(issue.suggestedFix.proposedArticle, varValues);
+  const [editedArticle, setEditedArticle] = useState(resolvedArticle);
+
+  // Keep edited article in sync when variables change (unless user is manually editing)
+  const [userEdited, setUserEdited] = useState(false);
+  const articleToShow = isEditing ? editedArticle : resolveArticle(issue.suggestedFix.proposedArticle, varValues);
+
+  const hasUnfilledVars = variables.some((v) => !varValues[v.key]?.trim());
+  void userEdited;
 
   const handleApply = () => {
     setApplying(true);
@@ -157,13 +178,38 @@ export function IssueDetail({ issue, onBack, onApplyFix }: IssueDetailProps) {
               </div>
             </div>
 
-            <div className="px-5 py-4 space-y-3">
+            <div className="px-5 py-4 space-y-4">
               <div>
                 <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">
                   What's missing
                 </p>
                 <p className="text-sm text-gray-600">{issue.suggestedFix.currentGap}</p>
               </div>
+
+              {/* Variable inputs */}
+              {!applied && variables.length > 0 && (
+                <div className="bg-amber-50 border border-amber-100 rounded-lg px-4 py-3 space-y-3">
+                  <p className="text-xs font-medium text-amber-800">
+                    Fill in the details below before applying — the article will update automatically.
+                  </p>
+                  {variables.map((v) => (
+                    <div key={v.key} className="flex items-center gap-3">
+                      <label className="text-sm font-medium text-gray-700 w-36 shrink-0">
+                        {v.label}
+                      </label>
+                      <input
+                        type="text"
+                        placeholder={v.placeholder}
+                        value={varValues[v.key] ?? ''}
+                        onChange={(e) =>
+                          setVarValues((prev) => ({ ...prev, [v.key]: e.target.value }))
+                        }
+                        className="flex-1 text-sm border border-gray-200 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-purple/30 focus:border-brand-purple"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
 
               <div>
                 <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">
@@ -173,23 +219,33 @@ export function IssueDetail({ issue, onBack, onApplyFix }: IssueDetailProps) {
                   <textarea
                     className="w-full text-sm font-mono text-gray-700 bg-gray-50 border border-gray-200 rounded-lg p-3 h-64 resize-y focus:outline-none focus:ring-2 focus:ring-brand-purple/30 focus:border-brand-purple"
                     value={editedArticle}
-                    onChange={(e) => setEditedArticle(e.target.value)}
+                    onChange={(e) => { setEditedArticle(e.target.value); setUserEdited(true); }}
                   />
                 ) : (
                   <div className="bg-gray-50 rounded-lg p-4 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap font-mono max-h-64 overflow-y-auto">
-                    {editedArticle}
+                    {articleToShow}
                   </div>
                 )}
               </div>
 
               {!applied ? (
-                <button
-                  onClick={handleApply}
-                  disabled={applying}
-                  className="w-full mt-2 py-2.5 rounded-lg bg-brand-purple text-white text-sm font-semibold hover:bg-indigo-600 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-                >
-                  {applying ? 'Deploying fix…' : 'Apply fix to production'}
-                </button>
+                <div className="space-y-1.5">
+                  <button
+                    onClick={() => {
+                      setEditedArticle(articleToShow);
+                      handleApply();
+                    }}
+                    disabled={applying || hasUnfilledVars}
+                    className="w-full py-2.5 rounded-lg bg-brand-purple text-white text-sm font-semibold hover:bg-indigo-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    {applying ? 'Deploying fix…' : 'Apply fix to production'}
+                  </button>
+                  {hasUnfilledVars && (
+                    <p className="text-xs text-center text-amber-600">
+                      Fill in all required fields above to apply this fix.
+                    </p>
+                  )}
+                </div>
               ) : (
                 <div className="flex items-center gap-2 py-2.5 text-sm text-emerald-700 font-medium">
                   <CheckCircle2 size={16} />
