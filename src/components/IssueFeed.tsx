@@ -94,6 +94,7 @@ export function IssueFeed({ issues, onSelectIssue }: IssueFeedProps) {
 
   const sortedIssues = [...issues]
     .sort((a, b) => b.priorityScore - a.priorityScore)
+    .filter((i) => i.status !== 'fix_applied')
     .filter((i) => !priorityFilter || priorityLabel(i.priorityScore).label === priorityFilter)
     .filter((i) => !categoryFilter || i.category === categoryFilter)
     .filter((i) => !productLineFilter || i.productLine === productLineFilter);
