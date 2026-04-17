@@ -85,7 +85,7 @@ export function IssueDetail({ issue, onBack, onApplyFix }: IssueDetailProps) {
   );
   const [deploying, setDeploying] = useState(false);
 
-  const resolvedArticle = resolveArticle(issue.suggestedFix.proposedArticle, varValues);
+  const resolvedArticle = issue.deployedArticle ?? resolveArticle(issue.suggestedFix.proposedArticle, varValues);
   const [editedArticle, setEditedArticle] = useState(resolvedArticle);
 
   const articleToShow = isEditing ? editedArticle : resolveArticle(issue.suggestedFix.proposedArticle, varValues);

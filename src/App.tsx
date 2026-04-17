@@ -20,10 +20,10 @@ export default function App() {
     setView('detail');
   }
 
-  function handleApplyFix(issueId: string, _editedArticle: string) {
+  function handleApplyFix(issueId: string, deployedArticle: string) {
     setIssues((prev) =>
       prev.map((issue) =>
-        issue.id === issueId ? { ...issue, status: 'fix_applied' } : issue
+        issue.id === issueId ? { ...issue, status: 'fix_applied', deployedArticle } : issue
       )
     );
   }

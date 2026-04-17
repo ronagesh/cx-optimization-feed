@@ -56,4 +56,5 @@ export interface Issue {
   detectedDate?: string;   // ISO date string, e.g. "2026-03-03"
   fixAppliedDate?: string; // ISO date string, e.g. "2026-03-31"
   sampleSize?: number;     // total conversations in the measured window
+  deployedArticle?: string; // final resolved article content after fix was applied
 }
