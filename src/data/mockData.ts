@@ -44,8 +44,8 @@ function makeDailyData(
 
 // Issue 1 & 2: Mar 1 → Apr 21 (52 days), fix applied Mar 31 (index 30)
 // Issue 3-5: Mar 1 → Mar 28 (28 days), no fix
-const ISSUE1_DATA = makeDailyData('2026-03-01', 52, 30, 65, 55, 14, 13);
-const ISSUE2_DATA = makeDailyData('2026-03-01', 52, 30, 68, 58, 13, 15);
+const ISSUE1_DATA = makeDailyData('2026-03-01', 52, 30, 68, 44, 12, 16);
+const ISSUE2_DATA = makeDailyData('2026-03-01', 52, 30, 71, 47, 11, 17);
 const ISSUE3_DATA = makeDailyData('2026-03-01', 28, null, 62, 52, 0, 0);
 const ISSUE4_DATA = makeDailyData('2026-03-01', 28, null, 66, 56, 0, 0);
 const ISSUE5_DATA = makeDailyData('2026-03-01', 28, null, 70, 60, 0, 0);
