@@ -35,9 +35,29 @@ function ScoreLabel({ value }: { value: number }) {
   return <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">Low</span>;
 }
 
+function computeR7Lift(issue: Issue, key: 'csat' | 'deflection'): number | null {
+  const data = issue.impactData;
+  const fixIdx = issue.fixAppliedWeek ?? data.length;
+  const before = data.slice(0, fixIdx);
+  const after = data.slice(fixIdx);
+  if (!before.length || !after.length) return null;
+  const beforeVal = before[before.length - 1][key];
+  const afterVal = after[after.length - 1][key];
+  return afterVal - beforeVal;
+}
+
 export function IssueFeed({ issues, onSelectIssue }: IssueFeedProps) {
-  const appliedCount = issues.filter((i) => i.status === 'fix_applied').length;
+  const appliedIssues = issues.filter((i) => i.status === 'fix_applied');
+  const appliedCount = appliedIssues.length;
   const sortedIssues = [...issues].sort((a, b) => b.priorityScore - a.priorityScore);
+
+  const avgLift = (key: 'csat' | 'deflection'): string => {
+    if (!appliedCount) return '—';
+    const lifts = appliedIssues.map((i) => computeR7Lift(i, key)).filter((v): v is number => v !== null);
+    if (!lifts.length) return '—';
+    const avg = Math.round(lifts.reduce((s, v) => s + v, 0) / lifts.length);
+    return avg >= 0 ? `+${avg}` : `${avg}`;
+  };
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-8">
@@ -51,7 +71,7 @@ export function IssueFeed({ issues, onSelectIssue }: IssueFeedProps) {
       </div>
 
       {/* Summary bar */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-4 gap-4 mb-8">
         <div className="bg-white border border-gray-100 rounded-xl p-4">
           <p className="text-xs text-gray-500 mb-1">Open Issues</p>
           <p className="text-2xl font-semibold text-gray-900">
@@ -66,11 +86,16 @@ export function IssueFeed({ issues, onSelectIssue }: IssueFeedProps) {
         </div>
         <div className="bg-white border border-gray-100 rounded-xl p-4">
           <p className="text-xs text-gray-500 mb-1">Avg CSAT Lift</p>
-          <p className="text-2xl font-semibold text-emerald-600">
-            {appliedCount > 0 ? '+0.5' : '—'}
-          </p>
+          <p className="text-2xl font-semibold text-emerald-600">{avgLift('csat')}</p>
           <p className="text-xs text-gray-400 mt-0.5">
-            {appliedCount > 0 ? 'per applied fix' : 'apply fixes to see impact'}
+            {appliedCount > 0 ? 'pts · R7 avg' : 'apply fixes to see impact'}
+          </p>
+        </div>
+        <div className="bg-white border border-gray-100 rounded-xl p-4">
+          <p className="text-xs text-gray-500 mb-1">Avg Deflection Lift</p>
+          <p className="text-2xl font-semibold text-emerald-600">{avgLift('deflection')}</p>
+          <p className="text-xs text-gray-400 mt-0.5">
+            {appliedCount > 0 ? 'pts · R7 avg' : 'apply fixes to see impact'}
           </p>
         </div>
       </div>
