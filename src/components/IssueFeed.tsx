@@ -29,16 +29,10 @@ function StatusBadge({ status }: { status: Issue['status'] }) {
   );
 }
 
-function ScoreBar({ value }: { value: number }) {
-  const color = value >= 80 ? 'bg-red-400' : value >= 55 ? 'bg-amber-400' : 'bg-gray-300';
-  return (
-    <div className="flex items-center gap-2">
-      <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-        <div className={`h-full rounded-full ${color}`} style={{ width: `${value}%` }} />
-      </div>
-      <span className="text-xs tabular-nums text-gray-500 w-7 text-right">{value}</span>
-    </div>
-  );
+function ScoreLabel({ value }: { value: number }) {
+  if (value >= 70) return <span className="text-xs font-medium text-red-600 bg-red-50 px-2 py-0.5 rounded-full">High</span>;
+  if (value >= 40) return <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">Medium</span>;
+  return <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">Low</span>;
 }
 
 export function IssueFeed({ issues, onSelectIssue }: IssueFeedProps) {
@@ -107,27 +101,24 @@ export function IssueFeed({ issues, onSelectIssue }: IssueFeedProps) {
                     {issue.summary}
                   </p>
 
-                  {/* Mini score bars */}
-                  <div className="mt-3 grid grid-cols-3 gap-x-6 gap-y-1.5 max-w-lg">
-                    <div>
-                      <p className="text-xs text-gray-400 mb-0.5">How common</p>
-                      <ScoreBar value={issue.scoreBreakdown.frequency} />
+                  {/* Metric labels */}
+                  <div className="mt-3 flex flex-wrap gap-3">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs text-gray-400">How common</span>
+                      <ScoreLabel value={issue.scoreBreakdown.frequency} />
                     </div>
-                    <div>
-                      <p className="text-xs text-gray-400 mb-0.5">CSAT Impact</p>
-                      <ScoreBar value={issue.scoreBreakdown.csatImpact} />
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs text-gray-400">CSAT Impact</span>
+                      <ScoreLabel value={issue.scoreBreakdown.csatImpact} />
                     </div>
-                    <div>
-                      <p className="text-xs text-gray-400 mb-0.5">Escalation Volume</p>
-                      <ScoreBar value={issue.scoreBreakdown.deflectionImpact} />
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs text-gray-400">Escalation Volume</span>
+                      <ScoreLabel value={issue.scoreBreakdown.deflectionImpact} />
                     </div>
                   </div>
                 </div>
 
                 <div className="flex flex-col items-end gap-2 shrink-0">
-                  <div className="flex items-center justify-center w-12 h-12 rounded-full border-2 border-gray-100 group-hover:border-brand-purple/30 transition-colors">
-                    <span className="text-sm font-bold text-gray-700">{issue.priorityScore}</span>
-                  </div>
                   <div className="flex items-center gap-1 text-xs text-brand-purple font-medium opacity-0 group-hover:opacity-100 transition-opacity">
                     View <ChevronRight size={13} />
                   </div>

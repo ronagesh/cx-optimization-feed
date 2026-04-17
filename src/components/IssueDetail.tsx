@@ -24,25 +24,26 @@ function outcomeLabel(outcome: string) {
   return <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">Unresolved</span>;
 }
 
+function levelLabel(value: number) {
+  if (value >= 70) return <span className="text-xs font-medium text-red-600 bg-red-50 px-2 py-0.5 rounded-full">High</span>;
+  if (value >= 40) return <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">Medium</span>;
+  return <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">Low</span>;
+}
+
 function MetricExplainer({
   label,
   value,
   description,
-  color,
 }: {
   label: string;
   value: number;
   description: string;
-  color: string;
 }) {
   return (
     <div className="flex flex-col gap-1">
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium text-gray-700">{label}</span>
-        <span className="text-sm font-semibold text-gray-900">{value}/100</span>
-      </div>
-      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-        <div className={`h-full rounded-full ${color}`} style={{ width: `${value}%` }} />
+        {levelLabel(value)}
       </div>
       <p className="text-xs text-gray-500">{description}</p>
     </div>
@@ -202,14 +203,11 @@ export function IssueDetail({ issue, onBack, onApplyFix }: IssueDetailProps) {
         {/* Right column — priority breakdown */}
         <div className="space-y-4">
           <div className="bg-white border border-gray-100 rounded-xl p-5">
-            <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center justify-between mb-4">
               <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">
-                Priority Score
+                Priority
               </p>
-            </div>
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-4xl font-bold text-gray-900">{issue.priorityScore}</span>
-              <span className="text-sm text-gray-400">/ 100</span>
+              {levelLabel(issue.priorityScore)}
             </div>
 
             <div className="space-y-4">
@@ -217,31 +215,26 @@ export function IssueDetail({ issue, onBack, onApplyFix }: IssueDetailProps) {
                 label="How common is this?"
                 value={issue.scoreBreakdown.frequency}
                 description={`Affects roughly ${issue.scoreBreakdown.frequency}% of recent conversations`}
-                color="bg-brand-purple"
               />
               <MetricExplainer
                 label="CSAT Impact"
                 value={issue.scoreBreakdown.csatImpact}
                 description="How much this issue is affecting your customer satisfaction scores"
-                color="bg-red-400"
               />
               <MetricExplainer
                 label="Escalation Volume"
                 value={issue.scoreBreakdown.deflectionImpact}
                 description="How often this issue leads to conversations being handed off to a human agent"
-                color="bg-amber-400"
               />
               <MetricExplainer
-                label="Business impact"
+                label="Business Impact"
                 value={issue.scoreBreakdown.businessImpact}
                 description="Estimated risk to revenue, refunds, or legal exposure"
-                color="bg-orange-400"
               />
               <MetricExplainer
                 label="How confident are we?"
                 value={issue.scoreBreakdown.modelConfidence}
                 description="Confidence that this is a real, fixable issue and not noise"
-                color="bg-emerald-400"
               />
             </div>
           </div>
