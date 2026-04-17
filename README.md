@@ -1,15 +1,8 @@
-# CX Optimization Feed
+# Decagon Hillclimbing Agent
 
-A prototype for a customer-facing AI support optimization product. Built for an interview.
+A prototype of a customer-facing optimization product for AI support teams. Built for customer ops and support leads at e-commerce companies running Decagon trials, it surfaces the highest-priority issues degrading CSAT and deflection, explains why each issue matters in plain language, suggests a knowledge base fix the user can preview and edit, and tracks the before/after impact of every deployed fix using a 7-day rolling average. The goal: compress the cycle time from issue detection to measurable improvement.
 
-## What it does
-
-Customer ops/support leads at e-commerce companies can use this tool to:
-
-1. **View a prioritized feed of issues** — the system surfaces where the AI agent is underperforming, ranked by frequency, CSAT drag, deflection drag, business impact, and model confidence
-2. **Dig into each issue** — see real conversation examples where the bot failed, understand why the issue matters, and review a suggested knowledge base fix
-3. **Apply fixes** — preview and edit the proposed KB article, then deploy it to production in one click
-4. **Track impact** — after a fix is applied, monitor before/after CSAT and deflection rate trends segmented by issue category
+**Live demo:** [cx-optimization-feed.vercel.app](https://cx-optimization-feed.vercel.app)
 
 ## Running locally
 
@@ -18,14 +11,6 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173).
-
 ## Stack
 
-- React + TypeScript (Vite)
-- Tailwind CSS
-- Recharts
-
-## Notes
-
-This is a prototype — no backend, auth, or persistence. All data is mocked in `src/data/mockData.ts`.
+React · TypeScript · Vite · Tailwind CSS · Recharts
