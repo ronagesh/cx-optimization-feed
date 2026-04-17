@@ -72,7 +72,10 @@ function resolveArticle(template: string, vars: Record<string, string>): string 
 export function IssueDetail({ issue, onBack, onApplyFix }: IssueDetailProps) {
   const variables = issue.suggestedFix.variables ?? [];
   const [varValues, setVarValues] = useState<Record<string, string>>(
-    Object.fromEntries(variables.map((v) => [v.key, v.defaultValue ?? '']))
+    Object.fromEntries(variables.map((v) => [
+      v.key,
+      issue.status === 'fix_applied' ? (v.defaultValue ?? '') : '',
+    ]))
   );
   const [isEditing, setIsEditing] = useState(false);
   const [showConversations, setShowConversations] = useState(true);
