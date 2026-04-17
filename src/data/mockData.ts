@@ -7,6 +7,7 @@ export const ISSUES: Issue[] = [
     summary:
       'Customers are frequently pushing back on the return window the bot quotes, citing a different policy on your website. The bot\'s answers on this topic are inconsistent across conversations and correlate strongly with escalations and poor ratings.',
     category: 'Returns & Refunds',
+    productLine: 'Apparel',
     status: 'new',
     priorityScore: 91,
     scoreBreakdown: {
@@ -92,6 +93,7 @@ Prefer an exchange? Select "Exchange" in the Returns Portal and we'll ship your 
     summary:
       "When customers ask where their order is, the bot tells them to check their email instead of providing a direct tracking link. Most customers have already checked their email — they need the link, not a redirect.",
     category: 'Order Status',
+    productLine: 'Footwear',
     status: 'new',
     priorityScore: 84,
     scoreBreakdown: {
@@ -169,6 +171,7 @@ Please wait 24 hours — packages are sometimes marked delivered early. If it st
     summary:
       "The bot can't answer questions about shipping costs to countries outside the US. Customers are dropping off without completing purchase because they can't get a clear answer.",
     category: 'Shipping',
+    productLine: 'Apparel',
     status: 'new',
     priorityScore: 67,
     scoreBreakdown: {
@@ -242,6 +245,7 @@ For specific rate quotes or shipping to a country not listed above, please [cont
     summary:
       "Customers are asking whether they can use multiple promo codes together. The bot gives inconsistent answers — sometimes saying yes, sometimes no — because there's no clear policy in the knowledge base.",
     category: 'Promotions & Discounts',
+    productLine: 'Accessories',
     status: 'new',
     priorityScore: 54,
     scoreBreakdown: {
@@ -313,6 +317,7 @@ If your code should work but isn't, [contact us](https://example.com/contact) an
     summary:
       'During the holiday shopping period, a growing number of customers are asking about gift options. The bot has no information on this and is telling customers the option doesn\'t exist — when it does.',
     category: 'Order Options',
+    productLine: 'Home & Living',
     status: 'new',
     priorityScore: 38,
     scoreBreakdown: {

@@ -53,14 +53,20 @@ export function IssueFeed({ issues, onSelectIssue }: IssueFeedProps) {
 
   const [priorityFilter, setPriorityFilter] = useState<string | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
+  const [productLineFilter, setProductLineFilter] = useState<string | null>(null);
 
   const categories = [...new Set(issues.map((i) => i.category))];
+  const productLines = [...new Set(issues.map((i) => i.productLine))];
   const priorities = ['High Priority', 'Medium Priority', 'Low Priority'];
 
   const sortedIssues = [...issues]
     .sort((a, b) => b.priorityScore - a.priorityScore)
     .filter((i) => !priorityFilter || priorityLabel(i.priorityScore).label === priorityFilter)
-    .filter((i) => !categoryFilter || i.category === categoryFilter);
+    .filter((i) => !categoryFilter || i.category === categoryFilter)
+    .filter((i) => !productLineFilter || i.productLine === productLineFilter);
+
+  const hasFilters = !!(priorityFilter || categoryFilter || productLineFilter);
+  const clearFilters = () => { setPriorityFilter(null); setCategoryFilter(null); setProductLineFilter(null); };
 
   const avgLift = (key: 'csat' | 'deflection'): string => {
     if (!appliedCount) return '—';
@@ -112,9 +118,9 @@ export function IssueFeed({ issues, onSelectIssue }: IssueFeedProps) {
       </div>
 
       {/* Filters */}
-      <div className="flex items-center gap-6 mb-4">
+      <div className="flex items-center gap-6 mb-4 flex-wrap">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs font-medium text-gray-400">Priority</span>
+          <span className="text-sm font-semibold text-gray-700">Priority</span>
           {priorities.map((p) => (
             <button
               key={p}
@@ -131,7 +137,7 @@ export function IssueFeed({ issues, onSelectIssue }: IssueFeedProps) {
         </div>
         <div className="h-4 w-px bg-gray-200" />
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs font-medium text-gray-400">Type</span>
+          <span className="text-sm font-semibold text-gray-700">Type</span>
           {categories.map((c) => (
             <button
               key={c}
@@ -146,9 +152,26 @@ export function IssueFeed({ issues, onSelectIssue }: IssueFeedProps) {
             </button>
           ))}
         </div>
-        {(priorityFilter || categoryFilter) && (
+        <div className="h-4 w-px bg-gray-200" />
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-sm font-semibold text-gray-700">Product Line</span>
+          {productLines.map((pl) => (
+            <button
+              key={pl}
+              onClick={() => setProductLineFilter(productLineFilter === pl ? null : pl)}
+              className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                productLineFilter === pl
+                  ? 'bg-brand-purple text-white border-brand-purple'
+                  : 'border-gray-200 text-gray-600 hover:border-gray-300'
+              }`}
+            >
+              {pl}
+            </button>
+          ))}
+        </div>
+        {hasFilters && (
           <button
-            onClick={() => { setPriorityFilter(null); setCategoryFilter(null); }}
+            onClick={clearFilters}
             className="text-xs text-gray-400 hover:text-gray-600 transition-colors ml-auto"
           >
             Clear filters
@@ -162,7 +185,7 @@ export function IssueFeed({ issues, onSelectIssue }: IssueFeedProps) {
           <div className="text-center py-12 text-gray-400 text-sm">
             No issues match the selected filters.{' '}
             <button
-              onClick={() => { setPriorityFilter(null); setCategoryFilter(null); }}
+              onClick={clearFilters}
               className="text-brand-purple hover:underline"
             >
               Clear filters

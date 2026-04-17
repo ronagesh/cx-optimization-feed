@@ -41,6 +41,7 @@ export interface Issue {
   title: string;
   summary: string;
   category: string;
+  productLine: string;
   status: IssueStatus;
   priorityScore: number; // 0–100 aggregate
   scoreBreakdown: ScoreBreakdown;
