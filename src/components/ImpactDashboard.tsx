@@ -47,12 +47,11 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
   const avg = (arr: typeof data, key: 'csat' | 'deflection') =>
     arr.length ? arr.reduce((s, d) => s + d[key], 0) / arr.length : null;
 
-  // Baseline = avg before fix; "last 7 days" = most recent data point
+  // Baseline = avg before fix; after = avg since fix went live
   const beforeCsat = avg(before, 'csat');
   const beforeDeflection = avg(before, 'deflection');
-  const lastPoint = after.length ? after[after.length - 1] : null;
-  const afterCsat = lastPoint?.csat ?? null;
-  const afterDeflection = lastPoint?.deflection ?? null;
+  const afterCsat = avg(after, 'csat');
+  const afterDeflection = avg(after, 'deflection');
 
   const csatLift = beforeCsat !== null && afterCsat !== null ? afterCsat - beforeCsat : null;
   const deflectionLift =
@@ -89,7 +88,7 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
               <TrendingUp size={13} />
               CSAT {csatLift > 0 ? '+' : ''}{Math.round(csatLift)} pts
               <span className="text-emerald-500 font-normal">
-                ({Math.round(beforeCsat!)} → {Math.round(afterCsat!)}) · last 7 days
+                ({Math.round(beforeCsat!)} → {Math.round(afterCsat!)}) · since fix went live
               </span>
             </div>
           ) : null}
@@ -98,7 +97,7 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
               <TrendingUp size={13} />
               Deflection {deflectionLift > 0 ? '+' : ''}{Math.round(deflectionLift)} pts
               <span className="text-blue-400 font-normal">
-                ({Math.round(beforeDeflection!)}% → {Math.round(afterDeflection!)}%) · last 7 days
+                ({Math.round(beforeDeflection!)}% → {Math.round(afterDeflection!)}%) · since fix went live
               </span>
             </div>
           ) : null}
@@ -173,7 +172,7 @@ function ImpactCard({ issue, onSelect }: { issue: Issue; onSelect: () => void })
         <p className="text-xs text-gray-400 mt-2">
           Metrics measured on conversations in the <strong>{issue.category}</strong> category. CSAT shown out of 100.
           {fixWeekLabel
-            ? ` Dashed line marks when the fix was deployed (${fixWeekLabel}). Lift calculated vs. pre-fix average.`
+            ? ` Dashed line marks when the fix was deployed (${fixWeekLabel}). Lift is the avg since deployment vs. avg before.`
             : ''}
         </p>
       </div>
